@@ -29,10 +29,20 @@ public class PaqueteTuristicoServlet extends HttpServlet {
         Map<String, Object> data = new HashMap<>();
 
         try {
-            if (pathInfo == null || pathInfo.equals("/")) {
+            if (pathInfo == null || pathInfo.equals("/") || pathInfo.isBlank()) {
                 List<PaqueteTuristico> paquetes = paqueteDAO.findAll();
                 data.put("status", "ok");
                 data.put("data", paquetes);
+                JsonResponse.send(response, HttpServletResponse.SC_OK, data);
+                return;
+            }
+
+            String cleanPath = pathInfo.startsWith("/") ? pathInfo.substring(1) : pathInfo;
+
+            if (cleanPath.equals("alta-demanda")) {
+                List<Map<String, Object>> alertas = paqueteDAO.findPaquetesAltaDemanda();
+                data.put("status", "ok");
+                data.put("data", alertas);
                 JsonResponse.send(response, HttpServletResponse.SC_OK, data);
                 return;
             }

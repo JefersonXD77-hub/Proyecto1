@@ -1,0 +1,126 @@
+<div class="container mt-4">
+  <h2 class="mb-4">Gestión de Clientes</h2>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="success" class="alert alert-success">
+    {{ success }}
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">
+        {{ editingId ? 'Editar Cliente' : 'Nuevo Cliente' }}
+      </h5>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label">DPI / Pasaporte</label>
+          <input type="text" class="form-control" formControlName="dpiPasaporte">
+        </div>
+
+        <div class="col-md-8">
+          <label class="form-label">Nombre Completo</label>
+          <input type="text" class="form-control" formControlName="nombreCompleto">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Fecha Nacimiento</label>
+          <input type="date" class="form-control" formControlName="fechaNacimiento">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Teléfono</label>
+          <input type="text" class="form-control" formControlName="telefono">
+        </div>
+
+        <div class="col-md-4">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" formControlName="email">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Nacionalidad</label>
+          <input type="text" class="form-control" formControlName="nacionalidad">
+        </div>
+
+        <div class="col-md-6 d-flex align-items-end" *ngIf="editingId">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" formControlName="activo" id="activoCliente">
+            <label class="form-check-label" for="activoCliente">
+              Activo
+            </label>
+          </div>
+        </div>
+
+        <div class="col-12 d-flex gap-2">
+          <button class="btn btn-primary" type="submit" [disabled]="saving">
+            {{ saving ? 'Guardando...' : (editingId ? 'Actualizar' : 'Crear') }}
+          </button>
+
+          <button class="btn btn-secondary" type="button" (click)="resetForm()">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Listado de Clientes</h5>
+
+      <div *ngIf="loading" class="alert alert-info">
+        Cargando clientes...
+      </div>
+
+      <div class="table-responsive" *ngIf="!loading">
+        <table class="table table-bordered table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>DPI/Pasaporte</th>
+              <th>Nombre</th>
+              <th>Fecha Nacimiento</th>
+              <th>Teléfono</th>
+              <th>Email</th>
+              <th>Nacionalidad</th>
+              <th>Activo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cliente of clientes">
+              <td>{{ cliente.idCliente }}</td>
+              <td>{{ cliente.dpiPasaporte }}</td>
+              <td>{{ cliente.nombreCompleto }}</td>
+              <td>{{ cliente.fechaNacimiento }}</td>
+              <td>{{ cliente.telefono }}</td>
+              <td>{{ cliente.email }}</td>
+              <td>{{ cliente.nacionalidad }}</td>
+              <td>
+                <span class="badge" [class.bg-success]="cliente.activo" [class.bg-secondary]="!cliente.activo">
+                  {{ cliente.activo ? 'Sí' : 'No' }}
+                </span>
+              </td>
+              <td class="d-flex gap-2">
+                <button class="btn btn-sm btn-warning" (click)="edit(cliente)">
+                  Editar
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deactivate(cliente)" [disabled]="!cliente.activo">
+                  Desactivar
+                </button>
+              </td>
+            </tr>
+
+            <tr *ngIf="clientes.length === 0">
+              <td colspan="9" class="text-center">No hay clientes registrados</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

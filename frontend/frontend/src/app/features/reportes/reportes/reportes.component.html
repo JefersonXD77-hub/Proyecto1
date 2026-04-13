@@ -1,0 +1,121 @@
+<div class="container py-4">
+  <h2 class="mb-4">Reportes</h2>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Generar reporte</h5>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Tipo de reporte</label>
+            <select class="form-select" formControlName="tipo">
+              <option *ngFor="let opcion of opcionesReporte" [value]="opcion.value">
+                {{ opcion.label }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Fecha inicio</label>
+            <input type="date" class="form-control" formControlName="fechaInicio">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Fecha fin</label>
+            <input type="date" class="form-control" formControlName="fechaFin">
+          </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+          <button type="submit" class="btn btn-primary" [disabled]="loading">
+            {{ loading ? 'Generando...' : 'Consultar' }}
+          </button>
+
+          <button type="button" class="btn btn-outline-success" (click)="exportPdf()" [disabled]="loading">
+            Exportar PDF
+          </button>
+
+          <button type="button" class="btn btn-outline-secondary" (click)="reset()" [disabled]="loading">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="success" class="alert alert-success">
+    {{ success }}
+  </div>
+
+  <div class="card shadow-sm" *ngIf="resultado">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Resultado del reporte</h5>
+
+      <div *ngIf="isArrayResult() && resultado.length === 0" class="text-muted">
+        No hay datos para el reporte seleccionado.
+      </div>
+
+      <div class="table-responsive" *ngIf="isArrayResult() && resultado.length > 0">
+        <table class="table table-striped table-hover align-middle">
+          <thead>
+            <tr>
+              <th *ngFor="let header of getArrayHeaders()">
+                {{ header }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of resultado">
+              <td *ngFor="let header of getArrayHeaders()">
+                {{ formatValue(row[header]) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div *ngIf="!isArrayResult()">
+        <div class="row g-3 mb-4">
+          <div class="col-md-4" *ngFor="let key of getObjectKeys(resultado)">
+            <div class="border rounded p-3 bg-light" *ngIf="key !== 'reservaciones'">
+              <strong>{{ key }}</strong><br>
+              {{ formatValue(resultado[key]) }}
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="hasNestedReservaciones()">
+          <h6 class="mb-3">Detalle de reservaciones</h6>
+
+          <div class="table-responsive" *ngIf="resultado.reservaciones.length > 0">
+            <table class="table table-striped table-hover align-middle">
+              <thead>
+                <tr>
+                  <th *ngFor="let header of getNestedReservacionesHeaders()">
+                    {{ header }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of resultado.reservaciones">
+                  <td *ngFor="let header of getNestedReservacionesHeaders()">
+                    {{ formatValue(row[header]) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div *ngIf="resultado.reservaciones.length === 0" class="text-muted">
+            No hay reservaciones asociadas para mostrar.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

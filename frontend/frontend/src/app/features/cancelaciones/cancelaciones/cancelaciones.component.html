@@ -1,0 +1,81 @@
+<div class="container mt-4">
+  <h2 class="mb-4">Gestión de Cancelaciones</h2>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="success" class="alert alert-success">
+    {{ success }}
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Procesar Cancelación</h5>
+
+      <form [formGroup]="form" (ngSubmit)="submit()" class="row g-3">
+        <div class="col-md-8">
+          <label class="form-label">Reservación</label>
+          <select class="form-select" formControlName="idReservacion" (change)="onReservacionChange()">
+            <option value="">Seleccione una reservación</option>
+            <option *ngFor="let reservacion of reservaciones" [value]="reservacion.idReservacion">
+              {{ reservacion.numeroReservacion }} - {{ reservacion.paquete.nombre }} - {{ reservacion.estado }}
+            </option>
+          </select>
+        </div>
+
+        <div class="col-md-4 d-flex align-items-end">
+          <button class="btn btn-danger w-100" type="submit" [disabled]="saving">
+            {{ saving ? 'Procesando...' : 'Cancelar Reservación' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card" *ngIf="selectedReservacionId">
+    <div class="card-body">
+      <h5 class="card-title">Resultado / Historial de Cancelación</h5>
+
+      <div *ngIf="loadingCancelacion" class="alert alert-info">
+        Cargando cancelación...
+      </div>
+
+      <div *ngIf="!loadingCancelacion && cancelacion" class="row g-3">
+        <div class="col-md-4">
+          <strong>ID Cancelación:</strong> {{ cancelacion.idCancelacion }}
+        </div>
+        <div class="col-md-4">
+          <strong>Reservación:</strong> {{ cancelacion.reservacion.numeroReservacion }}
+        </div>
+        <div class="col-md-4">
+          <strong>Fecha Cancelación:</strong> {{ cancelacion.fechaCancelacion }}
+        </div>
+
+        <div class="col-md-4">
+          <strong>Días de anticipación:</strong> {{ cancelacion.diasAnticipacion }}
+        </div>
+        <div class="col-md-4">
+          <strong>% Reembolso:</strong> {{ cancelacion.porcentajeReembolso }}%
+        </div>
+        <div class="col-md-4">
+          <strong>Monto pagado:</strong> Q{{ cancelacion.montoPagado }}
+        </div>
+
+        <div class="col-md-4">
+          <strong>Monto reembolsado:</strong> Q{{ cancelacion.montoReembolsado }}
+        </div>
+        <div class="col-md-4">
+          <strong>Pérdida agencia:</strong> Q{{ cancelacion.perdidaAgencia }}
+        </div>
+        <div class="col-md-4">
+          <strong>Usuario proceso:</strong> {{ cancelacion.usuarioProceso.nombreCompleto }}
+        </div>
+      </div>
+
+      <div *ngIf="!loadingCancelacion && !cancelacion" class="alert alert-secondary">
+        Esta reservación todavía no tiene cancelación registrada.
+      </div>
+    </div>
+  </div>
+</div>

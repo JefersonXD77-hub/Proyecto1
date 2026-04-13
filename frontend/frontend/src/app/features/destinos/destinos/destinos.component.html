@@ -1,0 +1,142 @@
+<div class="container py-4">
+  <h2 class="mb-4">Gestión de destinos</h2>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3">
+        {{ editingId ? 'Editar destino' : 'Nuevo destino' }}
+      </h5>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" formControlName="nombre">
+            <div class="text-danger small mt-1" *ngIf="form.get('nombre')?.touched && form.get('nombre')?.invalid">
+              El nombre es obligatorio.
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">País</label>
+            <input type="text" class="form-control" formControlName="pais">
+            <div class="text-danger small mt-1" *ngIf="form.get('pais')?.touched && form.get('pais')?.invalid">
+              El país es obligatorio.
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Clima / mejor época</label>
+            <input type="text" class="form-control" formControlName="climaEpoca">
+            <div class="text-danger small mt-1" *ngIf="form.get('climaEpoca')?.touched && form.get('climaEpoca')?.invalid">
+              Este campo es obligatorio.
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">URL de imagen</label>
+            <input type="text" class="form-control" formControlName="urlImagen">
+            <div class="text-danger small mt-1" *ngIf="form.get('urlImagen')?.touched && form.get('urlImagen')?.invalid">
+              La URL de imagen es obligatoria.
+            </div>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Descripción</label>
+            <textarea rows="3" class="form-control" formControlName="descripcion"></textarea>
+            <div class="text-danger small mt-1" *ngIf="form.get('descripcion')?.touched && form.get('descripcion')?.invalid">
+              La descripción es obligatoria.
+            </div>
+          </div>
+
+          <div class="col-12 form-check mt-2 ms-2" *ngIf="editingId">
+            <input class="form-check-input" type="checkbox" formControlName="activo" id="activo">
+            <label class="form-check-label" for="activo">
+              Activo
+            </label>
+          </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+          <button type="submit" class="btn btn-primary" [disabled]="saving">
+            {{ saving ? 'Guardando...' : (editingId ? 'Actualizar' : 'Crear') }}
+          </button>
+
+          <button type="button" class="btn btn-outline-secondary" (click)="resetForm()" [disabled]="saving">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="success" class="alert alert-success">
+    {{ success }}
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Listado de destinos</h5>
+
+      <div *ngIf="loading" class="text-muted">
+        Cargando destinos...
+      </div>
+
+      <div *ngIf="!loading && destinos.length === 0" class="text-muted">
+        No hay destinos registrados.
+      </div>
+
+      <div class="table-responsive" *ngIf="!loading && destinos.length > 0">
+        <table class="table table-striped table-hover align-middle">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>País</th>
+              <th>Clima / época</th>
+              <th>Imagen</th>
+              <th>Estado</th>
+              <th style="width: 180px;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let destino of destinos">
+              <td>{{ destino.idDestino }}</td>
+              <td>{{ destino.nombre }}</td>
+              <td>{{ destino.pais }}</td>
+              <td>{{ destino.climaEpoca }}</td>
+              <td>
+                <a [href]="destino.urlImagen" target="_blank" rel="noopener noreferrer">
+                  Ver imagen
+                </a>
+              </td>
+              <td>
+                <span class="badge" [ngClass]="destino.activo !== false ? 'text-bg-success' : 'text-bg-secondary'">
+                  {{ destino.activo !== false ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-warning" (click)="edit(destino)">
+                    Editar
+                  </button>
+
+                  <button
+                    class="btn btn-sm btn-danger"
+                    (click)="deactivate(destino)"
+                    [disabled]="destino.activo === false">
+                    Desactivar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

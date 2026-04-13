@@ -1,0 +1,142 @@
+<div class="container py-4">
+  <h2 class="mb-4">Carga masiva</h2>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Procesar archivo de entrada</h5>
+
+      <div class="mb-3">
+        <label for="archivoCargaMasiva" class="form-label">Archivo .txt</label>
+        <input
+          id="archivoCargaMasiva"
+          type="file"
+          class="form-control"
+          accept=".txt,text/plain"
+          (change)="onFileSelected($event)">
+      </div>
+
+      <div class="mb-3" *ngIf="archivoSeleccionado">
+        <span class="badge text-bg-secondary">
+          Archivo seleccionado: {{ archivoSeleccionado.name }}
+        </span>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary" (click)="submit()" [disabled]="loading">
+          {{ loading ? 'Procesando...' : 'Procesar carga' }}
+        </button>
+
+        <button class="btn btn-outline-secondary" (click)="reset()" [disabled]="loading">
+          Limpiar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="success" class="alert alert-success">
+    {{ success }}
+  </div>
+
+  <div class="card shadow-sm mb-4" *ngIf="resumen">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Resumen de procesamiento</h5>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="border rounded p-3 bg-light">
+            <strong>Total de líneas procesadas</strong><br>
+            {{ resumen.totalLineasProcesadas }}
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="border rounded p-3 bg-light">
+            <strong>Líneas exitosas</strong><br>
+            {{ resumen.lineasExitosas }}
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="border rounded p-3 bg-light">
+            <strong>Líneas con error</strong><br>
+            {{ resumen.lineasConError }}
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="registrosInsertados" class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead>
+            <tr>
+              <th>Tipo de registro</th>
+              <th>Cantidad insertada</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Usuarios</td>
+              <td>{{ registrosInsertados.usuarios }}</td>
+            </tr>
+            <tr>
+              <td>Destinos</td>
+              <td>{{ registrosInsertados.destinos }}</td>
+            </tr>
+            <tr>
+              <td>Proveedores</td>
+              <td>{{ registrosInsertados.proveedores }}</td>
+            </tr>
+            <tr>
+              <td>Paquetes</td>
+              <td>{{ registrosInsertados.paquetes }}</td>
+            </tr>
+            <tr>
+              <td>Servicios de paquete</td>
+              <td>{{ registrosInsertados.serviciosPaquete }}</td>
+            </tr>
+            <tr>
+              <td>Clientes</td>
+              <td>{{ registrosInsertados.clientes }}</td>
+            </tr>
+            <tr>
+              <td>Reservaciones</td>
+              <td>{{ registrosInsertados.reservaciones }}</td>
+            </tr>
+            <tr>
+              <td>Pagos</td>
+              <td>{{ registrosInsertados.pagos }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm" *ngIf="errores.length > 0">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Errores encontrados</h5>
+
+      <div class="table-responsive">
+        <table class="table table-striped table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Línea</th>
+              <th>Contenido</th>
+              <th>Error</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of errores">
+              <td>{{ item.linea }}</td>
+              <td><code>{{ item.contenido }}</code></td>
+              <td>{{ item.error }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

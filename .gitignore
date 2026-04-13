@@ -37,8 +37,8 @@ backend/*.class
 backend/**/*.class
 
 # ===== WAR / deployment artifacts =====
-backend/*.war
-backend/**/*.war
+#backend/*.war
+#backend/**/*.war
 
 # ===== Tomcat temp / IDE generated =====
 backend/.settings/

@@ -1,0 +1,63 @@
+<div class="dashboard-page" *ngIf="authService.getCurrentUser() as user">
+  <div class="container py-4">
+    <div class="dashboard-hero mb-4">
+      <div class="dashboard-hero-overlay"></div>
+      <div class="dashboard-hero-content">
+        <span class="badge text-bg-light text-dark mb-3 px-3 py-2">
+          {{ user.rol }}
+        </span>
+        <h1 class="dashboard-title">Bienvenido, {{ user.nombreCompleto }}</h1>
+        <p class="dashboard-subtitle">
+          Sistema de gestión operativa, comercial y administrativa de
+          Horizontes sin Límites.
+        </p>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="dashboard-card h-100">
+          <h3 class="dashboard-card-title">Tu sesión</h3>
+          <p><strong>Usuario:</strong> {{ user.nombreCompleto }}</p>
+          <p><strong>Rol activo:</strong> {{ user.rol }}</p>
+          
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="dashboard-card h-100">
+          <h3 class="dashboard-card-title">¿Qué puedes hacer?</h3>
+          <ul class="dashboard-list mb-0" *ngIf="user.rol === 'ADMINISTRADOR'">
+            <li>Administrar usuarios del sistema</li>
+            <li>Procesar carga masiva inicial</li>
+            <li>Generar reportes y exportarlos a PDF</li>
+            <li>Supervisar módulos operativos y comerciales</li>
+          </ul>
+
+          <ul class="dashboard-list mb-0" *ngIf="user.rol === 'ATENCION_CLIENTE'">
+            <li>Registrar y actualizar clientes</li>
+            <li>Crear reservaciones</li>
+            <li>Registrar pagos</li>
+            <li>Gestionar cancelaciones y reembolsos</li>
+          </ul>
+
+          <ul class="dashboard-list mb-0" *ngIf="user.rol === 'OPERACIONES'">
+            <li>Gestionar destinos turísticos</li>
+            <li>Administrar proveedores</li>
+            <li>Configurar paquetes y sus servicios</li>
+            <li>Supervisar costos y alta demanda</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="dashboard-card h-100">
+          <h3 class="dashboard-card-title">Recomendación</h3>
+          <p class="text-muted mb-0">
+            Usa el menú superior para navegar a los módulos habilitados según tu rol.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

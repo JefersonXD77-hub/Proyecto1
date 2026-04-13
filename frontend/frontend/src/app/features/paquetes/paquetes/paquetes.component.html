@@ -1,0 +1,295 @@
+<div class="container py-4">
+  <h2 class="mb-4">Gestión de paquetes turísticos</h2>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="success" class="alert alert-success">
+    {{ success }}
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3">
+        {{ editingId ? 'Editar paquete' : 'Nuevo paquete' }}
+      </h5>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" formControlName="nombre">
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label">Destino</label>
+            <select class="form-select" formControlName="idDestino">
+              <option value="">Seleccione un destino</option>
+              <option *ngFor="let destino of destinos" [value]="destino.idDestino">
+                {{ destino.nombre }} - {{ destino.pais }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Duración en días</label>
+            <input type="number" class="form-control" formControlName="duracionDias">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Precio de venta</label>
+            <input type="number" step="0.01" class="form-control" formControlName="precioVenta">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Capacidad máxima</label>
+            <input type="number" class="form-control" formControlName="capacidadMaxima">
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Descripción</label>
+            <textarea rows="3" class="form-control" formControlName="descripcion"></textarea>
+          </div>
+
+          <div class="col-12 form-check mt-2 ms-2" *ngIf="editingId">
+            <input class="form-check-input" type="checkbox" formControlName="activo" id="activoPaquete">
+            <label class="form-check-label" for="activoPaquete">
+              Activo
+            </label>
+          </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+          <button type="submit" class="btn btn-primary" [disabled]="saving || loadingCatalogos">
+            {{ saving ? 'Guardando...' : (editingId ? 'Actualizar' : 'Crear') }}
+          </button>
+
+          <button type="button" class="btn btn-outline-secondary" (click)="resetForm()" [disabled]="saving">
+            Limpiar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Alertas de alta demanda</h5>
+
+      <div *ngIf="loadingAltaDemanda" class="text-muted">
+        Cargando alertas...
+      </div>
+
+      <div *ngIf="!loadingAltaDemanda && altaDemanda.length === 0" class="text-muted">
+        No hay paquetes con alta demanda actualmente.
+      </div>
+
+      <div class="table-responsive" *ngIf="!loadingAltaDemanda && altaDemanda.length > 0">
+        <table class="table table-sm table-striped align-middle">
+          <thead>
+            <tr>
+              <th>Paquete</th>
+              <th>Destino</th>
+              <th>Fecha viaje</th>
+              <th>Capacidad</th>
+              <th>Ocupados</th>
+              <th>% ocupación</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let alerta of altaDemanda">
+              <td>{{ alerta.nombrePaquete }}</td>
+              <td>{{ alerta.nombreDestino }}</td>
+              <td>{{ alerta.fechaViaje }}</td>
+              <td>{{ alerta.capacidadMaxima }}</td>
+              <td>{{ alerta.cuposOcupados }}</td>
+              <td>{{ alerta.porcentajeOcupacion }}%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h5 class="card-title mb-3">Listado de paquetes</h5>
+
+      <div *ngIf="loading" class="text-muted">
+        Cargando paquetes...
+      </div>
+
+      <div *ngIf="!loading && paquetes.length === 0" class="text-muted">
+        No hay paquetes registrados.
+      </div>
+
+      <div class="table-responsive" *ngIf="!loading && paquetes.length > 0">
+        <table class="table table-striped table-hover align-middle">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Destino</th>
+              <th>Días</th>
+              <th>Precio</th>
+              <th>Capacidad</th>
+              <th>Estado</th>
+              <th style="width: 280px;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let paquete of paquetes">
+              <td>{{ paquete.idPaquete }}</td>
+              <td>{{ paquete.nombre }}</td>
+              <td>{{ paquete.destino?.nombre }}</td>
+              <td>{{ paquete.duracionDias }}</td>
+              <td>Q {{ paquete.precioVenta | number:'1.2-2' }}</td>
+              <td>{{ paquete.capacidadMaxima }}</td>
+              <td>
+                <span class="badge" [ngClass]="paquete.activo !== false ? 'text-bg-success' : 'text-bg-secondary'">
+                  {{ paquete.activo !== false ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <div class="d-flex gap-2 flex-wrap">
+                  <button class="btn btn-sm btn-warning" (click)="edit(paquete)">
+                    Editar
+                  </button>
+
+                  <button class="btn btn-sm btn-danger" (click)="deactivate(paquete)" [disabled]="paquete.activo === false">
+                    Desactivar
+                  </button>
+
+                  <button class="btn btn-sm btn-info text-white" (click)="seleccionarPaquete(paquete)">
+                    Servicios
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm" *ngIf="selectedPaquete">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="card-title mb-0">
+          Servicios de: {{ selectedPaquete.nombre }}
+        </h5>
+
+        <button class="btn btn-outline-secondary btn-sm" (click)="clearServiciosPanel()">
+          Cerrar panel
+        </button>
+      </div>
+
+      <div *ngIf="errorServicio" class="alert alert-danger">
+        {{ errorServicio }}
+      </div>
+
+      <div *ngIf="successServicio" class="alert alert-success">
+        {{ successServicio }}
+      </div>
+
+      <div class="row g-3 mb-4" *ngIf="resumenCostos">
+        <div class="col-md-4">
+          <div class="border rounded p-3 bg-light">
+            <strong>Precio de venta:</strong><br>
+            Q {{ resumenCostos.precioVenta | number:'1.2-2' }}
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="border rounded p-3 bg-light">
+            <strong>Costo total:</strong><br>
+            Q {{ resumenCostos.costoTotal | number:'1.2-2' }}
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="border rounded p-3 bg-light">
+            <strong>Ganancia bruta:</strong><br>
+            Q {{ resumenCostos.gananciaBruta | number:'1.2-2' }}
+          </div>
+        </div>
+      </div>
+
+      <form [formGroup]="servicioForm" (ngSubmit)="submitServicio()" class="mb-4">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Proveedor</label>
+            <select class="form-select" formControlName="idProveedor">
+              <option value="">Seleccione un proveedor</option>
+              <option *ngFor="let proveedor of proveedores" [value]="proveedor.idProveedor">
+                {{ proveedor.nombre }} - {{ proveedor.tipoProveedor.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <div class="col-md-5">
+            <label class="form-label">Descripción</label>
+            <input type="text" class="form-control" formControlName="descripcion">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Costo</label>
+            <input type="number" step="0.01" class="form-control" formControlName="costo">
+          </div>
+        </div>
+
+        <div class="mt-3 d-flex gap-2">
+          <button type="submit" class="btn btn-primary" [disabled]="savingServicio">
+            {{ savingServicio ? 'Guardando...' : (editingServicioId ? 'Actualizar servicio' : 'Agregar servicio') }}
+          </button>
+
+          <button type="button" class="btn btn-outline-secondary" (click)="resetServicioForm()" [disabled]="savingServicio">
+            Limpiar
+          </button>
+        </div>
+      </form>
+
+      <div *ngIf="loadingServicios" class="text-muted">
+        Cargando servicios del paquete...
+      </div>
+
+      <div *ngIf="!loadingServicios && servicios.length === 0" class="text-muted">
+        Este paquete no tiene servicios registrados.
+      </div>
+
+      <div class="table-responsive" *ngIf="!loadingServicios && servicios.length > 0">
+        <table class="table table-striped align-middle">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Proveedor</th>
+              <th>Tipo</th>
+              <th>Descripción</th>
+              <th>Costo</th>
+              <th style="width: 180px;">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let servicio of servicios">
+              <td>{{ servicio.idServicioPaquete }}</td>
+              <td>{{ servicio.proveedor.nombre }}</td>
+               <td>{{ servicio.proveedor.tipoProveedor.nombre }}</td>
+              <td>{{ servicio.proveedor.tipoProveedor.nombre }}</td>
+              <td>Q {{ servicio.costo | number:'1.2-2' }}</td>
+              <td>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-warning" (click)="editServicio(servicio)">
+                    Editar
+                  </button>
+
+                  <button class="btn btn-sm btn-danger" (click)="deleteServicio(servicio)">
+                    Eliminar
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,72 @@
+<nav class="navbar navbar-expand-lg navbar-dark shadow-sm travel-navbar" *ngIf="shouldShowNavbar && authService.getCurrentUser() as user">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-semibold" routerLink="/dashboard" routerLinkActive="active">
+      Horizontes sin Límites
+    </a>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#mainNavbar"
+      aria-controls="mainNavbar"
+      aria-expanded="false"
+      aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse show" id="mainNavbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 navbar-links-wrap">
+
+        <li class="nav-item" *ngIf="user.rol === 'ADMINISTRADOR' || user.rol === 'ATENCION_CLIENTE'">
+          <a class="nav-link compact-link" routerLink="/clientes" routerLinkActive="active">Clientes</a>
+        </li>
+
+        <li class="nav-item" *ngIf="user.rol === 'ADMINISTRADOR' || user.rol === 'ATENCION_CLIENTE'">
+          <a class="nav-link compact-link" routerLink="/reservaciones" routerLinkActive="active">Reservaciones</a>
+        </li>
+
+        <li class="nav-item" *ngIf="user.rol === 'ADMINISTRADOR' || user.rol === 'ATENCION_CLIENTE'">
+          <a class="nav-link compact-link" routerLink="/pagos" routerLinkActive="active">Pagos</a>
+        </li>
+
+        <li class="nav-item" *ngIf="user.rol === 'ADMINISTRADOR' || user.rol === 'ATENCION_CLIENTE'">
+          <a class="nav-link compact-link" routerLink="/cancelaciones" routerLinkActive="active">Cancelaciones</a>
+        </li>
+
+        <li class="nav-item" *ngIf="user.rol === 'ADMINISTRADOR' || user.rol === 'OPERACIONES'">
+          <a class="nav-link compact-link" routerLink="/destinos" routerLinkActive="active">Destinos</a>
+        </li>
+
+        <li class="nav-item" *ngIf="user.rol === 'ADMINISTRADOR' || user.rol === 'OPERACIONES'">
+          <a class="nav-link compact-link" routerLink="/proveedores" routerLinkActive="active">Proveedores</a>
+        </li>
+
+        <li class="nav-item" *ngIf="user.rol === 'ADMINISTRADOR' || user.rol === 'OPERACIONES'">
+          <a class="nav-link compact-link" routerLink="/paquetes" routerLinkActive="active">Paquetes</a>
+        </li>
+
+        <li class="nav-item" *ngIf="user.rol === 'ADMINISTRADOR'">
+          <a class="nav-link compact-link" routerLink="/reportes" routerLinkActive="active">Reportes</a>
+        </li>
+
+        <li class="nav-item" *ngIf="user.rol === 'ADMINISTRADOR'">
+          <a class="nav-link compact-link" routerLink="/usuarios" routerLinkActive="active">Usuarios</a>
+        </li>
+
+        <li class="nav-item" *ngIf="user.rol === 'ADMINISTRADOR'">
+          <a class="nav-link compact-link" routerLink="/carga-masiva" routerLinkActive="active">Carga masiva</a>
+        </li>
+      </ul>
+
+      <div class="d-flex align-items-center gap-2 me-2 text-white navbar-user-box">
+       
+        <span class="badge role-badge">{{ user.rol }}</span>
+      </div>
+
+      <button class="btn logout-btn btn-sm" (click)="logout()">
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+</nav>

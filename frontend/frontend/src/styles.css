@@ -1,0 +1,30 @@
+/* You can add global styles to this file, and also import other style files */
+body {
+  background-color: #f5f6f8;
+}
+
+.card {
+  border: 1px solid #dee2e6;
+  border-radius: 0.75rem;
+}
+
+.card-body {
+  padding: 1.25rem;
+}
+
+.table th {
+  font-weight: 600;
+}
+
+.alert {
+  border-radius: 0.65rem;
+}
+
+.btn {
+  border-radius: 0.5rem;
+}
+
+.navbar .nav-link.active {
+  font-weight: 600;
+  text-decoration: underline;
+}
